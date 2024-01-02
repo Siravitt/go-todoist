@@ -38,10 +38,10 @@ func (h authHandler) Register(c echo.Context) error {
 		logs.Error(err)
 		return handleError(c, err)
 	}
-	err = h.authSrv.Register(registerRequest)
+	result, err := h.authSrv.Register(registerRequest)
 	if err != nil {
 		logs.Error(err)
 		return handleError(c, err)
 	}
-	return c.JSON(http.StatusOK, "Register success")
+	return c.JSON(http.StatusOK, result)
 }

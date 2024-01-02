@@ -18,7 +18,7 @@ func NewAuthService(userRepo user_repository.UserRepository) authService {
 	return authService{userRepo: userRepo}
 }
 
-func (s authService) Login(login LoginRequest) (*string, error) {
+func (s authService) Login(login LoginRequest) (*LoginResponse, error) {
 	user, err := s.userRepo.GetByEmail(login.Email)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -35,10 +35,15 @@ func (s authService) Login(login LoginRequest) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return token, nil
+
+	response := LoginResponse{
+		Success: true,
+		Token:   *token,
+	}
+	return &response, nil
 }
 
-func (s authService) Register(regis RegisterRequest) error {
+func (s authService) Register(regis RegisterRequest) (*RegisterResponse, error) {
 	validate := validator.New()
 	validate.RegisterValidation("phoneNumber", utils.IsValidPhone)
 
@@ -49,12 +54,12 @@ func (s authService) Register(regis RegisterRequest) error {
 			errorMessage := "Field:" + e.Field() + "failed validation:" + e.Tag()
 			logs.Error(errorMessage)
 		}
-		return errors.NewValidationError("Register information is required")
+		return nil, errors.NewValidationError("Register information is required")
 	}
 	regis.Password, err = utils.HashPassword(regis.Password)
 	if err != nil {
 		logs.Error(err)
-		return errors.NewUnexpectedError()
+		return nil, errors.NewUnexpectedError()
 	}
 	registerStruct := user_repository.User{
 		Id:          0,
@@ -66,7 +71,11 @@ func (s authService) Register(regis RegisterRequest) error {
 	_, err = s.userRepo.Create(registerStruct)
 	if err != nil {
 		logs.Error(err)
-		return errors.NewUnexpectedError()
+		return nil, errors.NewUnexpectedError()
 	}
-	return nil
+	response := RegisterResponse{
+		Success: true,
+		Message: "Register success",
+	}
+	return &response, nil
 }

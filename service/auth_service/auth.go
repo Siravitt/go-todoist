@@ -13,10 +13,16 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token string `json:"token"`
+	Success bool   `json:"success"`
+	Token   string `json:"token"`
+}
+
+type RegisterResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
 }
 
 type AuthService interface {
-	Login(LoginRequest) (*string, error)
-	Register(RegisterRequest) error
+	Login(LoginRequest) (*LoginResponse, error)
+	Register(RegisterRequest) (*RegisterResponse, error)
 }

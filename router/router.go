@@ -33,7 +33,6 @@ func RunServer(db *sqlx.DB) {
 	authService := auth_service.NewAuthService(userRepo)
 	authHandler := handler.NewAuthHandler(authService)
 	authMiddleware := auth_middleware.NewAuthMiddleware()
-	_ = authMiddleware
 
 	// Todo init
 	todoRepo := todo_repository.NewTodoRepositoryDB(db)
@@ -54,8 +53,8 @@ func RunServer(db *sqlx.DB) {
 	protected.GET("/todos", todoHandler.GetTodos)
 	protected.GET("/todo/:id", todoHandler.GetTodo)
 	protected.POST("/todo", todoHandler.AddTodo)
-	// e.PATCH("/todo/:id", )
-	// e.DELETE("/todo/:id", )
+	// protected.PATCH("/todo/:id", )
+	// protected.DELETE("/todo/:id", )
 
 	logs.Info("Server running at port: " + viper.GetString("app.port"))
 	if err := e.Start(fmt.Sprintf(":%v", viper.GetInt("app.port"))); err != http.ErrServerClosed {
