@@ -32,6 +32,17 @@ func (r userRepositoryDB) GetByID(id int) (*User, error) {
 	return &user, nil
 }
 
+// Get user by email
+func (r userRepositoryDB) GetByEmail(email string) (*User, error) {
+	user := User{}
+	query := "select id, email, password from users where email = ?"
+	err := r.db.Get(&user, query, email)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 // Create user
 func (r userRepositoryDB) Create(u User) (*User, error) {
 	query := "insert into users (username, password, email, phone_number) values (?, ?, ?, ?)"

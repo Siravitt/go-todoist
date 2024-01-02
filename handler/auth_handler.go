@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
+	"github.com/Siravitt/go-todoist/logs"
 	"github.com/Siravitt/go-todoist/service/auth_service"
-	"github.com/Siravitt/go-todoist/utils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,10 +17,31 @@ func NewAuthHandler(authSrv auth_service.AuthService) authHandler {
 }
 
 func (h authHandler) Login(c echo.Context) error {
-	token, _ := utils.GenerateJWT(1)
+	loginRequest := auth_service.LoginRequest{}
+	err := c.Bind(&loginRequest)
+	if err != nil {
+		logs.Error(err)
+		return handleError(c, err)
+	}
+	token, err := h.authSrv.Login(loginRequest)
+	if err != nil {
+		logs.Error(err)
+		return handleError(c, err)
+	}
 	return c.JSON(http.StatusOK, token)
 }
 
 func (h authHandler) Register(c echo.Context) error {
-	return nil
+	registerRequest := auth_service.RegisterRequest{}
+	err := c.Bind(&registerRequest)
+	if err != nil {
+		logs.Error(err)
+		return handleError(c, err)
+	}
+	err = h.authSrv.Register(registerRequest)
+	if err != nil {
+		logs.Error(err)
+		return handleError(c, err)
+	}
+	return c.JSON(http.StatusOK, "Register success")
 }

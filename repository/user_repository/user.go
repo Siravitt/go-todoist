@@ -5,11 +5,12 @@ type User struct {
 	Username    string `db:"username"`
 	Password    string `db:"password"`
 	Email       string `db:"email"`
-	PhoneNumber int    `db:"phone_number"`
+	PhoneNumber string `db:"phone_number"`
 }
 
 type UserRepository interface {
 	GetAll() ([]User, error)
 	GetByID(int) (*User, error)
+	GetByEmail(string) (*User, error)
 	Create(User) (*User, error)
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Siravitt/go-todoist/router"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
 )
@@ -13,9 +14,9 @@ import (
 func main() {
 	initConfig()
 	initTimeZone()
-	// db := initDatabase()
+	db := initDatabase()
 
-	router.RunServer(nil)
+	router.RunServer(db)
 }
 
 func initTimeZone() {
@@ -28,14 +29,14 @@ func initTimeZone() {
 
 func initDatabase() *sqlx.DB {
 	dsn := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v",
-		viper.GetString("db:username"),
+		viper.GetString("db.username"),
 		viper.GetString("db.password"),
-		viper.GetString("db:host"),
-		viper.GetString("db:post"),
-		viper.GetString("db:database"),
+		viper.GetString("db.host"),
+		viper.GetInt("db.port"),
+		viper.GetString("db.database"),
 	)
 
-	db, err := sqlx.Open(viper.GetString("db:driver"), dsn)
+	db, err := sqlx.Open(viper.GetString("db.driver"), dsn)
 	if err != nil {
 		panic(err)
 	}

@@ -1,10 +1,10 @@
 package auth_service
 
 type RegisterRequest struct {
-	Username    string `json:"username"`
-	Password    string `json:"password"`
-	Email       string `json:"email"`
-	PhoneNumber int    `json:"phone_number"`
+	Username    string `json:"username" validate:"required"`
+	Password    string `json:"password" validate:"required"`
+	Email       string `json:"email" validate:"required,email"`
+	PhoneNumber string `json:"phone_number" validate:"required,phoneNumber"`
 }
 
 type LoginRequest struct {
@@ -12,7 +12,11 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+type LoginResponse struct {
+	Token string `json:"token"`
+}
+
 type AuthService interface {
-	Login(LoginRequest)
-	Register(RegisterRequest)
+	Login(LoginRequest) (*string, error)
+	Register(RegisterRequest) error
 }

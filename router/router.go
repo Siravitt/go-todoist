@@ -1,10 +1,11 @@
 package router
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/Siravitt/go-todoist/handler"
+	"github.com/Siravitt/go-todoist/logs"
 	"github.com/Siravitt/go-todoist/middlewares/auth_middleware"
 	"github.com/Siravitt/go-todoist/repository/todo_repository"
 	"github.com/Siravitt/go-todoist/repository/user_repository"
@@ -14,6 +15,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/spf13/viper"
 )
 
 func RunServer(db *sqlx.DB) {
@@ -47,7 +49,6 @@ func RunServer(db *sqlx.DB) {
 	e.GET("/user/:id", userHandler.GetUser)
 
 	protected := e.Group("/v1", authMiddleware.AuthorizationMiddleware)
-	protected.POST("/register", authHandler.Register)
 
 	// ! Todo route
 	protected.GET("/todos", todoHandler.GetTodos)
@@ -56,8 +57,9 @@ func RunServer(db *sqlx.DB) {
 	// e.PATCH("/todo/:id", )
 	// e.DELETE("/todo/:id", )
 
-	if err := e.Start(":8080"); err != http.ErrServerClosed {
-		log.Fatal(err)
+	logs.Info("Server running at port: " + viper.GetString("app.port"))
+	if err := e.Start(fmt.Sprintf(":%v", viper.GetInt("app.port"))); err != http.ErrServerClosed {
+		logs.Error(err)
 		panic(err)
 	}
 }

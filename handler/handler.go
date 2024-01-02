@@ -14,6 +14,7 @@ type errorResponse struct {
 }
 
 func handleError(c echo.Context, err error) error {
+	// fmt.Println("<----------------------------------->")
 	switch e := err.(type) {
 	case errors.AppError:
 		return c.JSON(e.Code, errorResponse{Success: false, Message: e.Message})

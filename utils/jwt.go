@@ -22,7 +22,7 @@ func GenerateJWT(userID int) (*string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
-	ss, err := token.SignedString([]byte(viper.GetString("jwt:secret")))
+	ss, err := token.SignedString([]byte(viper.GetString("jwt.secret")))
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func ValidateJWT(tokenString string) (jwt.MapClaims, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
-		return []byte(viper.GetString("jwt:secret")), nil
+		return []byte(viper.GetString("jwt.secret")), nil
 	})
 
 	if err != nil {
