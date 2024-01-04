@@ -54,7 +54,15 @@ func (s authService) Register(regis RegisterRequest) (*RegisterResponse, error) 
 			errorMessage := "Field:" + e.Field() + "failed validation:" + e.Tag()
 			logs.Error(errorMessage)
 		}
-		return nil, errors.NewValidationError("Register information is required")
+		return nil, errors.NewValidationError("Invalid Information")
+	}
+	existUser, err := s.userRepo.GetByEmail(regis.Email)
+	if err != nil {
+		logs.Error(err)
+		return nil, errors.NewUnexpectedError()
+	}
+	if existUser.Email != "" {
+		return nil, errors.NewValidationError("User is already register")
 	}
 	regis.Password, err = utils.HashPassword(regis.Password)
 	if err != nil {
